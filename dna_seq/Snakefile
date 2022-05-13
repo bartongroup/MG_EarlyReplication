@@ -1,0 +1,223 @@
+
+
+import os
+import glob
+configfile: 'config/config.yaml'
+
+# Genome file configuration
+
+ref_dir = config['ensembl_dir']
+ref_release = config['reference']['release']
+ref_path = config['reference']['genome_path']
+ref_name = config['reference']['genome_name']
+ref_suffix = config['reference']['genome_suffix']
+
+# Remote
+
+ftp_base = ref_dir + ref_release
+ftp_fasta_dir = ftp_base + '/fasta/' + ref_path
+
+genome_file_name = ref_name + ref_suffix
+genome_url =  ftp_fasta_dir + '/dna/' + genome_file_name + '.gz'
+
+# Local
+
+genome_dir = 'genome'
+
+genome_file = os.path.join(genome_dir, genome_file_name)
+
+genome_index = genome_file + '.fai'
+genome_size_file = genome_file + '.txt'
+
+# bowtie index
+
+bowtie_base = "bowtie_index/" + config['reference']['bowtie_ref']
+
+# window sizes for bedgraphs
+
+WINDOWS = config['window_sizes']
+
+# Read samples from a file
+with open(config['samples']) as f:
+    SAMPLES = f.read().splitlines()
+
+
+FASTQ = expand("fastq/{sample}.fastq.gz", sample=SAMPLES)
+FASTQTRIM = expand("fastq_trimmed/{sample}_trimmed.fq.gz", sample=SAMPLES)
+QCS = expand("qc/{sample}_fastqc.html", sample=SAMPLES)
+MULTIQC = expand("multiqc/report.html")
+BARS = expand("bam/{sample}.report", sample=SAMPLES)
+BAMS = expand("bam/{sample}.filtered.bam", sample=SAMPLES)
+BAIS = expand("bam/{sample}.filtered.bam.bai", sample=SAMPLES)
+FLAGS = expand("bam/{sample}.flagstat", sample=SAMPLES)
+BEDS = expand("bed/{sample}.bed", sample=SAMPLES)
+BEDCOUNT = expand("bed/{sample}.count", sample=SAMPLES)
+BEDGRAPHS = expand("bedgraph/{sample}_{ws}.bedgraph", sample=SAMPLES, ws=WINDOWS)
+
+rule all:
+   input: MULTIQC + MULTIQC + BARS + BAIS + FLAGS + BEDGRAPHS + BEDCOUNT
+
+####################################################################
+# Trim adapter sequences
+
+rule trim_adapters:
+    input: 'fastq/{sample}.fastq.gz'
+    output:
+        fastq = 'fastq_trimmed/{sample}.fastq.gz',
+        report = 'fastq_trimmed/{sample}_trimming_report.txt',
+    threads: 4
+    shell:
+        '''
+        mkdir -p fastq_trimmed
+        trim_galore --cores {threads} --output_dir $TMPDIR/fastq_trimmed {input}
+        mv $TMPDIR/fastq_trimmed/{wildcards.sample}_trimmed.fq.gz {output.fastq}
+        mv $TMPDIR/fastq_trimmed/{wildcards.sample}.fastq.gz_trimming_report.txt {output.report}
+        '''
+
+####################################################################
+# Quality control
+
+rule fastqc:
+    input: 'fastq_trimmed/{sample}.fastq.gz'
+    output:
+        html = 'qc/{sample}_fastqc.html',
+        zip = 'qc/{sample}_fastqc.zip'
+    threads: 2
+    shell:
+        'fastqc -o qc --threads {threads} -f fastq {input}'
+
+
+####################################################################
+# Multiqc
+
+rule multiqc:
+    input:
+        qc = QCS,
+        trimmed = expand('fastq_trimmed/{sample}_trimming_report.txt', sample = SAMPLES)
+    output: 'multiqc/report.html'
+    shell:
+        'multiqc -f --filename report --outdir multiqc fastq_trimmed qc'
+
+
+####################################################################
+# Load genome files
+
+rule load_genome:
+    output: genome_file
+    shell:
+        'wget {genome_url} -O - | gunzip -c > {genome_file}'
+
+
+
+####################################################################
+# Index genome, create chromosome size file
+
+rule index_genome:
+    input: genome_file
+    output: genome_index
+    shell:
+        'samtools faidx {input}'
+
+rule size_genome:
+    input: genome_index
+    output: genome_size_file
+    shell:
+        'cut -f 1,2 {input} > {output}'
+
+
+####################################################################
+# Bowtie
+
+rule bowtie_index:
+    input: genome_file
+    output:
+        expand(bowtie_base + ".{index}.bt2", index=range(1,5)),
+        expand(bowtie_base + ".rev.{index}.bt2", index=range(1,3))
+    threads: 8
+    shell:
+        "bowtie2-build --threads {threads} {input} {bowtie_base}" 
+
+rule bowtie:
+    input:
+        expand(bowtie_base + ".{index}.bt2", index=range(1,5)),
+        expand(bowtie_base + ".rev.{index}.bt2", index=range(1,3)),
+        fastq = "fastq_trimmed/{sample}.fastq.gz"
+    output:
+        bam = "bam/{sample}.filtered.bam",
+        report = "bam/{sample}.report"
+    threads: 12
+    shell:
+        """
+        bowtie2 --threads {threads} -x {bowtie_base} -U {input.fastq} 2> {output.report} \
+        | samtools view -b -h -q 10 -@ {threads} - \
+        | samtools sort -O bam -T $TMPDIR -@ {threads} -o {output.bam} -
+        """
+
+
+####################################################################
+# Index BAM filtered files
+
+rule index_bam:
+    input: "bam/{sample}.filtered.bam"
+    output: "bam/{sample}.filtered.bam.bai"
+    shell:
+        "samtools index {input}"
+
+
+####################################################################
+# Run flagstat to gather mapping stats
+
+rule flagstat_bam:
+    input:  "bam/{sample}.filtered.bam"
+    output: "bam/{sample}.flagstat"
+    shell:
+        "samtools flagstat {input} > {output} "
+
+
+####################################################################
+# Create bed files
+# Make sure they are sorted, so we can conserve memory later.
+
+rule bamtobed:
+    input: "bam/{sample}.filtered.bam"
+    output: "bed/{sample}.bed"
+    shell:
+        "bedtools bamtobed -i {input} | sort -k1,1 -k2,2n > {output}"
+
+####################################################################
+# Count lines in bed files
+
+rule count_bed:
+    input: "bed/{sample}.bed"
+    output: "bed/{sample}.count"
+    shell:
+        "wc -l {input} | cut -d ' ' -f 1 > {output}"
+
+        
+
+####################################################################
+# Create bed window file
+# Make sure it is sorted, so we can conserve memory later.
+
+rule bedwindow:
+    input: genome_size_file
+    output: "bedgraph/window_{ws}.txt"
+    params:
+        window_size = "{ws}"
+    shell:
+        "bedtools makewindows -w {params.window_size} -s {params.window_size} -g {input} | sort -k1,1 -k2,2n > {output}"
+
+
+####################################################################
+# Create bedgraph files based on the given window.
+# Since the bed files are sorted, we can use -sorted option that is much more memory efficient.
+
+rule bedgraph:
+    input: 
+        bed = "bed/{sample}.bed",
+        window = "bedgraph/window_{ws}.txt"
+    output: "bedgraph/{sample}_{ws}.bedgraph"
+    shell:
+        "bedtools intersect -c -sorted -a {input.window} -b {input.bed} > {output}" 
+
+

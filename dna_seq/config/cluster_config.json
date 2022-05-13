@@ -1,0 +1,34 @@
+{
+    "fastqc":
+    {
+        "jc": "short",
+        "mem_free": "16G",
+        "threads": "2",
+        "local_free": "1G",
+        "ramdisk": "0G"
+    },
+    "bowtie_index":
+    {
+        "jc": "short",
+        "mem_free": "16G",
+        "threads": "8",
+        "local_free": "1G",
+        "ramdisk": "0G"
+    },
+    "bowtie":
+    {
+        "jc": "short",
+        "mem_free": "16G",
+        "threads": "12",
+        "local_free": "20G",
+        "ramdisk": "0G"
+    },
+    "__default__":
+    {
+        "jc": "short",
+        "mem_free": "8G",
+        "threads": "1",
+        "local_free": "1G",
+        "ramdisk": "0G"
+    }
+}

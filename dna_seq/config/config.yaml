@@ -1,0 +1,13 @@
+ensembl_dir: ftp://ftp.ensembl.org/pub/release-
+
+reference:
+    release: "94"
+    genome_path: homo_sapiens
+    genome_name: Homo_sapiens.GRCh38
+    genome_suffix: .dna.primary_assembly.fa
+    bowtie_ref: HS38
+    
+samples: config/samples.txt
+
+window_sizes: ["10000", "50000"]
+ 
