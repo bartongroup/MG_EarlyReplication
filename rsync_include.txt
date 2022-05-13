@@ -1,0 +1,8 @@
+multiqc/*.html
+bam/*.report
+bed/*.count
+bedgraph/*
+Snakefile
+run_snake.sh
+env.yml
+config/*
