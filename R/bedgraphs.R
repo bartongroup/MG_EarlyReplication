@@ -12,7 +12,7 @@ read_bg_files <- function(meta, window_size = 50000) {
 
   bg_lst <- map(1:nrow(meta), function(i) {
     r <- meta[i, ]
-    bg_file <- file.path(r$data_path, "bedgraph", str_glue("{r$raw_sample}.{window_size}.bedgraph"))
+    bg_file <- file.path(r$data_path, "bedgraph", str_glue("{r$raw_sample}_{window_size}.bedgraph"))
     stopifnot(file.exists(bg_file))
     read_tsv(bg_file, col_names = c("chr", "start", "end", all_of(r$sample)), col_types = "ciid") %>% 
       filter(chr %in% CHROMOSOMES)

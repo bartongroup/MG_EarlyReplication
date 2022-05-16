@@ -8,3 +8,4 @@ _targets
 dna_seq/bam
 dna_seq/bed
 dna_seq/bedgraph
+dna_seq/multiqc

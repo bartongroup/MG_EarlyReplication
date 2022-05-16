@@ -27,14 +27,14 @@ report_bowtie <- function(meta) {
       add_column(sample = r$sample)
   }) %>% 
     mutate(
-      value = round(as.integer(fs$value) / 1e6, 3),
+      value = round(as.integer(value) / 1e6, 3),
       sample = factor(sample, levels = meta$sample)
     ) %>% 
     pivot_wider(id_cols = sample, names_from = description, values_from = value) %>% 
     mutate(
       mapped_perc = round(100 * (multi + unique) / total, 2),
-      unique_perc = round(100 * dunique / total, 2),
-      multi_perc = round(100 * dmulti / total, 2)
+      unique_perc = round(100 * unique / total, 2),
+      multi_perc = round(100 * multi / total, 2)
     ) %>% 
     left_join(select(meta, sample, condition), by = "sample")
     set_names(c("Sample", "N total", "N unique", "N multi", "% mapped", "% unique", "% multi", "Condition"))

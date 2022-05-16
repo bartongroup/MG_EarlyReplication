@@ -43,7 +43,8 @@ targets_main <- function() {
   )
   
   save_data <- list(
-    tar_target(sav_gbg10, gbg10 %>% bg_tab(what = "normcount", samples = gsel) %>% write_tsv("tab/gbg10.tsv"))
+    tar_target(sav_gbg10, gbg10 %>% bg_tab(what = "normcount", samples = gsel) %>% write_tsv("tab/gbg10.tsv")),
+    tar_target(sav_gbg50, gbg50 %>% bg_tab(what = "normcount", samples = gsel) %>% write_tsv("tab/gbg50.tsv"))
   )
   
   c(
