@@ -100,9 +100,10 @@ sample_grouping <- function(bg, bad_samples) {
 
 
 # Group data by summing replicate counts according to groups vector.
-# groups should be a factor the same size as the sample number.
 
-group_bg <- function(bg, groups) {
+group_bg <- function(bg, bad_samples) {
+  grouping <- sample_grouping(bg, bad_samples)
+  groups <- grouping$group_name
   groups[is.na(groups)] = "BAD"
   raw <- bg$raw %>%
     t() %>%
@@ -135,6 +136,7 @@ group_bg <- function(bg, groups) {
     stats_bg() %>% 
     pull_control_bg() %>% 
     subtract_background(what = "raw")
+  bgg$grouping <- grouping
   
   bgg
 }
@@ -159,6 +161,13 @@ bg_tab <- function(bg, what = "raw", samples = NULL) {
   }
   tab
 }
+
+save_tab <- function(bg, samples, out_file_suffix) {
+  bg %>%
+    bg_tab(what = "normcount", samples = samples) %>%
+    write_tsv(str_glue("tab/gbg_{out_file_suffix}.tsv.gz"))
+}
+
 
 remove_zero_rows <- function(tab) {
   zer <- which(rowSums(tab) == 0)

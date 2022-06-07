@@ -10,6 +10,14 @@ CHROMOSOMES <- c(1:22, "X", "Y")
 
 BAD_SAMPLES <- c("E1:TM.1_0-40")  # failed sample with almost no data
 
+BEDGRAPHS <- data.frame(
+  WINDOW_SIZE = c(10000, 50000),
+  SUFFIX = c("10k", "50k")
+)
+
+# grouped sample selection for some plots
+GSEL <- c("TM_0-40", "TM_10-40", "TM_40-70", "TM_70-100", "TM_100-130", "TM_0-130")
+
 create_metadata <- function(meta_file) {
   read_tsv(meta_file, show_col_types = FALSE) %>% 
     left_join(TIMINGS, by = "timing") %>% 
