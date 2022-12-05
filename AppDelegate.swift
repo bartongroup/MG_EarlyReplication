@@ -3,7 +3,7 @@
 //  ReplicationWavelet
 //
 //  Created by Julian Blow on 09/11/2021.
-//
+
 
 import Cocoa
 import AppKit
