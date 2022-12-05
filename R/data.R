@@ -191,3 +191,23 @@ pulldown_efficiency <- function(bedcnt, bg) {
     tibble(name = pname, pull_fraction = pf, condition = cond)
   })
 }
+
+prepare_for_biostudies <- function(meta) {
+  meta |>
+    filter(!str_detect(type, "HU")) |> 
+    select(raw_sample, treatment, type, start, end, replicate) |>
+    mutate(
+      File = str_glue("{raw_sample}.fastq.gz"),
+      Type = "FASTQ",
+      treatment = recode(as.character(treatment), AS = "asynchronous", TM = "treatment", AS_U = "asynchronous unsorted", TM_HU = "treatment with hydroxyurea"),
+      source = recode(as.character(type),  PD = "Pulldown, ", CT = "Control, "),
+      time = as.character(str_glue("{start}-{end} min, "))
+    ) |> 
+    mutate(
+      source = if_else(is.na(type), "", source),
+      time = if_else(is.na(start), "", time)
+    ) |> 
+    mutate(Description = str_glue("{source}{time}{treatment}, replicate {replicate}")) |> 
+    select(File, Description, Type) |> 
+    write_tsv("dna_seq/biostudies.tsv")
+}
