@@ -39,5 +39,10 @@ This will install all necessary packages. Run the `targets` pipeline.
 targets::tar_make()
 ```
 
-This will carry out all the calculations, create figures (as [targets](https://books.ropensci.org/targets/)) and output data in directory `tab`.
+This will carry out all the calculations, create figures (as [targets](https://books.ropensci.org/targets/)) and output TSV files in directory `tab`.
+
+### Xcode
+
+Further analysis of the two TSV files created under `tab` directory is carried out by Swift code under directory `wavelets`. The `wavelets/README.rft` contains instructions.
+
 
