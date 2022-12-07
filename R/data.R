@@ -154,18 +154,18 @@ bg_dat <- function(bg, what = "raw") {
 
 bg_tab <- function(bg, what = "raw", samples = NULL) {
   tab <- bg$pos %>% 
-    select(chr, pos) %>% 
+    select(chr, start, end, pos) %>% 
     bind_cols(as_tibble(bg[[what]]))
   if (!is.null(samples)) {
-    tab <- tab[, c("chr", "pos", samples)]
+    tab <- tab[, c("chr", "start", 'end', "pos", samples)]
   }
   tab
 }
 
-save_tab <- function(bg, samples, out_file_suffix) {
+save_tab <- function(bg, out_file_suffix) {
   bg %>%
-    bg_tab(what = "normcount", samples = samples) %>%
-    write_tsv(str_glue("tab/gbg_{out_file_suffix}.tsv.gz"))
+    bg_tab(what = "normcount") %>%
+    write_tsv(str_glue("tab/gbg_{out_file_suffix}.tsv"))
 }
 
 

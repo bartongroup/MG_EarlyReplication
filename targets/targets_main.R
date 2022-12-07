@@ -13,7 +13,7 @@ targets_main <- function() {
     names = SUFFIX,
     tar_target(bg, process_bg(metadata, WINDOW_SIZE, normfac, bedcount)),
     tar_target(gbg, group_bg(bg, BAD_SAMPLES)),
-    tar_target(sav_gbg, save_tab(gbg, GSEL, SUFFIX))
+    tar_target(sav_gbg, save_tab(gbg, SUFFIX))
   )
   
   qc <- list(
