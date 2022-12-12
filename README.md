@@ -8,7 +8,7 @@ Software to accompany the manuscript de Costa et al.
 
 Copy all the FASTQ files from the archive to the `dna_seq/fastq` directory.
 
-Create and activate a conda environment
+Create and activate a `conda` environment
 
 ```
 cd dna_seq
