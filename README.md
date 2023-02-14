@@ -1,5 +1,7 @@
 # The location and development of Replicon Cluster Domains in early replicating DNA
 
+[![DOI](https://zenodo.org/badge/491921310.svg)](https://zenodo.org/badge/latestdoi/491921310)
+
 Software to accompany the manuscript de Costa et al.
 
 ## Usage
