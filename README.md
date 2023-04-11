@@ -2,7 +2,7 @@
 
 [![DOI](https://zenodo.org/badge/491921310.svg)](https://zenodo.org/badge/latestdoi/491921310)
 
-Software to accompany the manuscript de Costa et al.
+Software to accompany the manuscript [de Costa et al. "The location and development of Replicon Cluster Domains in early replicating DNA", Wellcome Open Research, 2023](https://wellcomeopenresearch.org/articles/8-158/v1)
 
 ## Usage
 
