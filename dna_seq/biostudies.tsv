@@ -1,0 +1,57 @@
+File	Description	Type
+E2_PD_23.fastq.gz	Pulldown, 0-30 min, asynchronous, replicate 1	FASTQ
+E2_PD_24.fastq.gz	Pulldown, 0-30 min, asynchronous, replicate 2	FASTQ
+E2_PD_25.fastq.gz	Pulldown, 0-30 min, asynchronous, replicate 3	FASTQ
+E2_PD_15.fastq.gz	Pulldown, 0-30 min, asynchronous, replicate 4	FASTQ
+E2_1_23.fastq.gz	Control, 0-30 min, asynchronous, replicate 1	FASTQ
+E2_1_24.fastq.gz	Control, 0-30 min, asynchronous, replicate 2	FASTQ
+E2_1_25.fastq.gz	Control, 0-30 min, asynchronous, replicate 3	FASTQ
+E2_1_15.fastq.gz	Control, 0-30 min, asynchronous, replicate 4	FASTQ
+E2_PD_17.fastq.gz	Pulldown, 0-60 min, asynchronous unsorted, replicate 1	FASTQ
+E2_1_17.fastq.gz	Control, 0-60 min, asynchronous unsorted, replicate 1	FASTQ
+E1_PD_1.fastq.gz	Pulldown, 0-40 min, treatment, replicate 1	FASTQ
+E2_PD_20.fastq.gz	Pulldown, 0-40 min, treatment, replicate 1	FASTQ
+E2_PD_21.fastq.gz	Pulldown, 0-40 min, treatment, replicate 2	FASTQ
+E2_PD_22.fastq.gz	Pulldown, 0-40 min, treatment, replicate 3	FASTQ
+E2_PD_1.fastq.gz	Pulldown, 10-40 min, treatment, replicate 2	FASTQ
+E2_PD_6.fastq.gz	Pulldown, 10-40 min, treatment, replicate 3	FASTQ
+E2_PD_11.fastq.gz	Pulldown, 10-40 min, treatment, replicate 4	FASTQ
+E2_PD_12.fastq.gz	Pulldown, 10-40 min, treatment, replicate 5	FASTQ
+E1_PD_2.fastq.gz	Pulldown, 40-70 min, treatment, replicate 1	FASTQ
+E2_PD_2.fastq.gz	Pulldown, 40-70 min, treatment, replicate 2	FASTQ
+E2_PD_7.fastq.gz	Pulldown, 40-70 min, treatment, replicate 3	FASTQ
+E1_PD_3.fastq.gz	Pulldown, 70-100 min, treatment, replicate 1	FASTQ
+E2_PD_3.fastq.gz	Pulldown, 70-100 min, treatment, replicate 2	FASTQ
+E2_PD_8.fastq.gz	Pulldown, 70-100 min, treatment, replicate 3	FASTQ
+E1_PD_5.fastq.gz	Pulldown, 0-130 min, treatment, replicate 1	FASTQ
+E2_PD_5.fastq.gz	Pulldown, 0-130 min, treatment, replicate 2	FASTQ
+E2_PD_10.fastq.gz	Pulldown, 0-130 min, treatment, replicate 3	FASTQ
+E1_PD_4.fastq.gz	Pulldown, 100-130 min, treatment, replicate 1	FASTQ
+E2_PD_4.fastq.gz	Pulldown, 100-130 min, treatment, replicate 2	FASTQ
+E2_PD_9.fastq.gz	Pulldown, 100-130 min, treatment, replicate 3	FASTQ
+E1_1_1.fastq.gz	Control, 0-40 min, treatment, replicate 1	FASTQ
+E2_1_20.fastq.gz	Control, 0-40 min, treatment, replicate 1	FASTQ
+E2_1_21.fastq.gz	Control, 0-40 min, treatment, replicate 2	FASTQ
+E2_1_22.fastq.gz	Control, 0-40 min, treatment, replicate 3	FASTQ
+E2_1_1.fastq.gz	Control, 10-40 min, treatment, replicate 2	FASTQ
+E2_1_6.fastq.gz	Control, 10-40 min, treatment, replicate 3	FASTQ
+E2_1_11.fastq.gz	Control, 10-40 min, treatment, replicate 4	FASTQ
+E2_1_12.fastq.gz	Control, 10-40 min, treatment, replicate 5	FASTQ
+E1_1_2.fastq.gz	Control, 40-70 min, treatment, replicate 1	FASTQ
+E2_1_2.fastq.gz	Control, 40-70 min, treatment, replicate 2	FASTQ
+E2_1_7.fastq.gz	Control, 40-70 min, treatment, replicate 3	FASTQ
+E1_1_3.fastq.gz	Control, 70-100 min, treatment, replicate 1	FASTQ
+E2_1_3.fastq.gz	Control, 70-100 min, treatment, replicate 2	FASTQ
+E2_1_8.fastq.gz	Control, 70-100 min, treatment, replicate 3	FASTQ
+E1_1_5.fastq.gz	Control, 0-130 min, treatment, replicate 1	FASTQ
+E2_1_5.fastq.gz	Control, 0-130 min, treatment, replicate 2	FASTQ
+E2_1_10.fastq.gz	Control, 0-130 min, treatment, replicate 3	FASTQ
+E1_1_4.fastq.gz	Control, 100-130 min, treatment, replicate 1	FASTQ
+E2_1_4.fastq.gz	Control, 100-130 min, treatment, replicate 2	FASTQ
+E2_1_9.fastq.gz	Control, 100-130 min, treatment, replicate 3	FASTQ
+E2_PD_26.fastq.gz	Pulldown, 10-40 min, treatment with hydroxyurea, replicate 1	FASTQ
+E2_PD_13.fastq.gz	Pulldown, 40-70 min, treatment with hydroxyurea, replicate 2	FASTQ
+E2_PD_14.fastq.gz	Pulldown, 70-100 min, treatment with hydroxyurea, replicate 3	FASTQ
+E2_1_26.fastq.gz	Control, 10-40 min, treatment with hydroxyurea, replicate 1	FASTQ
+E2_1_13.fastq.gz	Control, 40-70 min, treatment with hydroxyurea, replicate 2	FASTQ
+E2_1_14.fastq.gz	Control, 70-100 min, treatment with hydroxyurea, replicate 3	FASTQ
