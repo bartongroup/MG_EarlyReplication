@@ -1,12 +1,14 @@
 # The location and development of Replicon Cluster Domains in early replicating DNA
 
-Software to accompany the manuscript de Costa et al.
+[![DOI](https://zenodo.org/badge/491921310.svg)](https://zenodo.org/badge/latestdoi/491921310)
+
+Software to accompany the manuscript [de Costa et al. "The location and development of Replicon Cluster Domains in early replicating DNA", Wellcome Open Research, 2023](https://wellcomeopenresearch.org/articles/8-158/v1)
 
 ## Usage
 
 ### On a Linux cluster
 
-Copy all the FASTQ files from the archive to the `dna_seq/fastq` directory.
+Please download all the FASTQ files from [BioStudies repository](https://www.ebi.ac.uk/biostudies/studies/S-BSST966) and save them in the `dna_seq/fastq` directory.
 
 Create and activate a `conda` environment
 
