@@ -1,0 +1,8 @@
+library(tidyverse)
+library(segmented)
+library(data.table)
+library(viridis)
+library(dendsort)
+library(ggdendro)
+library(cowplot)
+library(ggridges)
