@@ -30,4 +30,14 @@ create_metadata <- function(meta_file) {
     arrange(treatment, type, end, start, replicate)
 }
 
-okabe_ito_palette <- c("#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7", "grey80", "grey30", "black")
+okabe_ito_palette <- c("#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7",  "black")
+
+
+# Revision files
+REVISION_DIR <- "revision"
+
+F_PEAKS_FOR_TADS <- "auto isolated peaks for TADs.xls"
+F_PEAK_GROWTH <- "auto isolated W+G peaks for Marek.xls"
+F_VALEY_FILLING <- "valley means + minima.tsv"
+F_ADJACENT_HEIGHT_SIMILARITY <- "peakNeighbourSimilarity.xls"
+

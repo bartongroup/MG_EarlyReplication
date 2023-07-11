@@ -6,3 +6,7 @@ dendsort
 ggdendro
 cowplot
 ggridges
+janitor
+readxl
+broom
+ggbeeswarm
