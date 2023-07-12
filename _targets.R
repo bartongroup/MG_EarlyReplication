@@ -15,7 +15,7 @@ for (d in c("tab")) if (!dir.exists(d)) dir.create(d)
 if (interactive()) sapply(required_packages, library, character.only = TRUE)
 
 # load all functions from .R files
-files_R <- list.files(c("R", "targets"), pattern = "*.R$", full.names = TRUE)
+files_R <- list.files(c("R", "targets", "revision"), pattern = "*.R$", full.names = TRUE)
 sr_ <- sapply(files_R, source)
 
 # prevent other packages from stealing from tidyverse
