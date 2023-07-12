@@ -83,6 +83,67 @@ tar_read(pg_lm_grad) |>
 ```
 
 
+# Valley filling
+
+A data for `r tar_read(n_vf)` valleys, including the mean and minumum signal, have been collected. @fig-vf-sel-filling shows a few example of valley signal time courses.
+
+```{r}
+#| label: fig-vf-sel-filling
+#| fig-cap: Random selection of valley filling signal.
+#| fig-width: 8
+#| fig-height: 8
+tar_read(fig_vf_sel_filling) 
+```
+
+
+Valley filling data were analysed in the same way as the peak width data, and the results are shown in @fig-vf-filling and @tbl-vf-test. There is a statistically significant increase in valley filling across all time points.
+
+```{r}
+#| label: fig-vf-filling
+#| fig-cap: Illustration of valley filling, quantified by the mean and minimum valley signal. A. The slope of a linear fit to four time points. The peaks are ordered according to their chromosomal positions and the colour indicates chromosomes. B. The gradient between adjacent time points. The gradient is calculated as the difference between the valley signal divided by the time separation between the adjacent time points (30 min) and it represents the valley filling speed. The black points with error bars represent the mean with its 95% confidence intervals.
+#| fig-width: 8
+#| fig-height: 6
+tar_read(fig_vf_filling) 
+```
+
+```{r}
+#| label: tbl-vf-test
+#| tbl-cap: Results of a one sample t-test against zero for valley filling.
+tar_read(vf_lm_grad) |> 
+  pluck("grad_test") |> 
+  select(method = type, midpoint, mean_filling_rate = estimate, CI_lo = conf.low, CI_up = conf.high, p_value = p.adj) |> 
+  group_by(method) |> 
+  gt() |> 
+  fmt_number(c(mean_filling_rate, CI_lo, CI_up), n_sigfig = 2) |> 
+  fmt_number(p_value, rows = p_value >= 0.001,  n_sigfig = 2) |> 
+  fmt_scientific(p_value, rows = p_value < 0.001,  decimals = 1) 
+```
+
+# Peak activation order
+
+Adjacent height similarity (AHS) were calculated for `r tar_read(n_aps)` groups of peaks in this manuscript. @fig-aps shows their summary.
+
+
+```{r}
+#| label: fig-aps
+#| fig-cap: Adjacent peak similarity across time points
+#| fig-width: 6
+#| fig-height: 4
+tar_read(fig_aps) 
+```
+
+The change in AHS between time points was assessed with repeated measures ANOVA (an extension of paired t-test), taking into account repeated measurements of the same peak at different time points. The result, shown in @tbl-aps-test, indicate no detected difference in AHS between time points.
+
+
+```{r}
+#| label: tbl-aps-test
+#| tbl-cap: Results of repeated measures ANOVA for adjacent height similarity across four time points. 'Within' section contains the result for AHS versus time point.
+tar_read(aps_test) |> 
+  gt() |> 
+  fmt_number(c(sumsq, meansq, statistic, p.value), n_sigfig = 2) |> 
+  sub_missing(c(statistic, p.value), missing_text = "")
+```
+
 
 # Session info
 

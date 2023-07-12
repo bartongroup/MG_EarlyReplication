@@ -28,7 +28,8 @@ read_tads <- function() {
       chr = factor(chr, levels = CHROMOSOMES),
       tad_start = start / 1e6,
       tad_end = end / 1e6
-    )
+    ) |> 
+    mutate(tad_id = sprintf("TAD_%04d", row_number()), .before = 1)
 }
 
 read_peaks_for_tads <- function() {
@@ -97,6 +98,36 @@ plot_tads_sel <- function(pft, tads, gbg, n_sel = NULL, margin = 1, time_point =
   }
   pl <- map(ids, ~plot_peak_tads(pft, tads, gbg, .x, margin = margin))
   plot_grid(plotlist = pl, ncol = ncol)
+}
+
+
+get_overlaps <- function(pft, tads) {
+  r_peaks <- pft |> 
+    mutate(start = 1e6 * peak_start, end = 1e6 * peak_end) |> 
+    select(seqname = chr, start, end, peak_id) |> 
+    GRanges()
+  r_tads <- tads |> 
+    select(seqname = chr, start, end, tad_id) |> 
+    GRanges()
+  
+  hits <- findOverlaps(r_peaks, r_tads)
+  peak_hits <- r_peaks[queryHits(hits)]
+  tad_hits <- r_tads[subjectHits(hits)]
+  
+  ov <- pintersect(peak_hits, tad_hits)
+  ov_frac_peaks <- width(ov) / width(peak_hits)
+  ov_frac_tads <- width(ov) / width(tad_hits)
+
+  tb_peaks <- pft |> select(peak_id, chr, peak_start, peak_end)
+  tb_tads <- tads |> select(tad_id, tad_start, tad_end)
+  
+  bind_cols(
+    as_tibble(mcols(peak_hits)),
+    as_tibble(mcols(tad_hits)),
+    tibble(overlap_peaks = ov_frac_peaks, overlap_tads = ov_frac_tads)
+  ) |> 
+    left_join(tb_peaks, by = "peak_id") |> 
+    left_join(tb_tads, by = "tad_id")
 }
 
 #########################################
@@ -290,6 +321,14 @@ read_adjacent_peak_similarity <- function() {
       end = 1
     ) |> 
     drop_na()
+}
+
+plot_peak_values <- function(d, ylab) {
+  d |> 
+    ggplot(aes(x = time_point, y = value)) +
+    th +
+    geom_quasirandom() +
+    labs(x = "Time point (min)", y = ylab)
 }
 
 time_point_repeated_anova <- function(d) {
