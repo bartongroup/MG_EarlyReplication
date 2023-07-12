@@ -1,5 +1,12 @@
 targets_revision <- function(){
   
+  tads <- list(
+    tar_target(gbg, read_gbg()),
+    tar_target(tads, read_tads()),
+    tar_target(pft, read_peaks_for_tads()),
+    tar_target(fig_tads, plot_tads_sel(pft, tads, gbg, ncol = 6))
+  )
+  
   peak_growth <- list(
     tar_target(pg, read_peak_growth()),
     tar_target(fig_pg_sel_growth, plot_sel_peak_growth(pg, n_peaks = 16)),
@@ -19,6 +26,7 @@ targets_revision <- function(){
   )
   
   c(
+    tads,
     peak_growth,
     valley_filling,
     peak_activation_order

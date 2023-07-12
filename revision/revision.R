@@ -1,10 +1,103 @@
 REVISION_DIR <- "revision/data"
 
+# TADS from Kang et al. 2020
+# See http://www.compbio.dundee.ac.uk/user/mgierlinski/earlyrep/doc/analysis.5.html for details
+F_TADS <- "U2OS_tads_rep1_tp360_p0.01.tsv"
+F_GBG <- "tab/gbg_50k.tsv"
+
 F_PEAKS_FOR_TADS <- "auto isolated peaks for TADs.xls"
 F_PEAK_GROWTH <- "auto isolated W+G peaks for Marek.xls"
 F_VALEY_FILLING <- "valley means + minima.tsv"
 F_ADJACENT_PEAK_SIMILARITY <- "peakNeighbourSimilarity.xls"
 
+th <- ggplot2::theme_bw() +
+  ggplot2::theme(panel.grid = ggplot2::element_blank())
+
+#########################################
+
+read_gbg <- function() {
+  read_tsv(F_GBG, show_col_types = FALSE)
+}
+
+read_tads <- function() {
+  f <- file.path(REVISION_DIR, F_TADS)
+  stopifnot(file.exists(f))
+  
+  read_tsv(f, show_col_types = FALSE) |> 
+    mutate(
+      chr = factor(chr, levels = CHROMOSOMES),
+      tad_start = start / 1e6,
+      tad_end = end / 1e6
+    )
+}
+
+read_peaks_for_tads <- function() {
+  f <- file.path(REVISION_DIR, F_PEAKS_FOR_TADS)
+  stopifnot(file.exists(f))
+  
+  read_excel(f) |> 
+    clean_names() |> 
+    rename(start = region_start, end = region_end, peak_start = peak_start_mbp, peak_end = peak_end_mbp) |> 
+    mutate(
+      chr = str_remove(chromo, "chr") |> factor(levels = CHROMOSOMES),
+      peak_id = str_glue("{chr}:{start}-{end}")
+    ) |> 
+    arrange(chr, start) |> 
+    mutate(peak_id = as_factor(peak_id))
+}
+
+plot_peak_tads <- function(pft, tads, gbg, peakid, margin = 1, time_point = "TM_100-130", text_size = 8) {
+  pk <- pft |> 
+    filter(peak_id == peakid)
+  delta <- pk$peak_end - pk$peak_start
+  r1 <- pk$peak_start - margin * delta
+  r2 <- pk$peak_end + margin * delta
+  
+  sig <- gbg |> 
+    filter(chr == pk$chr & pos > r1 & pos < r2) |> 
+    select(pos, signal := !!time_point) |> 
+    filter(signal > 0)
+  
+  mx <- max(sig$signal)
+  tad <- tads |> 
+    filter(chr == pk$chr & tad_end > r1 & tad_start < r2) |> 
+    mutate(
+      ymin = -0.05 * mx,
+      ymax = -1,
+      fill = as.factor(seq_along(tad_start) %% 2)
+    )
+  
+  sig |> 
+    ggplot() +
+    th +
+    theme(
+      axis.text.y = element_blank(),
+      axis.ticks.y = element_blank(),
+      axis.text.x = element_text(size = text_size)
+    ) +
+    geom_col(aes(x = pos, y = signal), fill = "orange", colour = "orange") +
+    labs(x = str_glue("chr{pk$chr}"), y = NULL) +
+    geom_rect(data = tad, aes(xmin = tad_start, xmax = tad_end, ymin = ymin, ymax = ymax, fill = fill)) +
+    geom_segment(data = pk, aes(x = peak_start, xend = peak_end, y = 0, yend = 0), linewidth = 1.2) +
+    scale_fill_manual(values = okabe_ito_palette[c(2,4)]) +
+    guides(fill = "none") +
+    coord_cartesian(xlim = c(r1, r2))
+}
+
+plot_tads_sel <- function(pft, tads, gbg, n_sel = NULL, margin = 1, time_point = "TM_100-130", seed = 42, ncol = 6) {
+  
+  if(is.null(n_sel)) {
+    ids <- pft$peak_id
+  } else {
+    set.seed(seed)
+    ids <- pft |>
+      sample_n(n_sel) |> 
+      arrange(chr, peak_start) |> 
+      pull(peak_id)
+  }
+  pl <- map(ids, ~plot_peak_tads(pft, tads, gbg, .x, margin = margin))
+  plot_grid(plotlist = pl, ncol = ncol)
+}
 
 #########################################
 
