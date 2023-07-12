@@ -129,7 +129,7 @@ read_peak_growth <- function() {
     select(peak_id, chr, start, end, type, time_point, time_start, time_end, value)
 }
 
-plot_sel_peak_growth <- function(d, n_peaks, seed = 42) {
+plot_sel_peak_growth <- function(d, n_peaks, seed = 42, ylab = "Value") {
   set.seed(seed)
   sel_peaks <- d |>
     count(peak_id) |>
@@ -148,7 +148,8 @@ plot_sel_peak_growth <- function(d, n_peaks, seed = 42) {
     geom_line() +
     geom_point() +
     scale_colour_manual(values = okabe_ito_palette) +
-    facet_wrap(~ peak_id)
+    facet_wrap(~ peak_id) +
+    labs(x = "Time point", y = ylab, colour = "Method")
 }
 
 time_lm_grad <- function(d) {
@@ -180,7 +181,7 @@ time_lm_grad <- function(d) {
     select(-data)
   
   grad_test <- grad |> 
-    select(midpoint, grad) |> 
+    select(type, midpoint, grad) |> 
     nest(data = grad) |> 
     mutate(
       fit = map(data, ~t.test(.x$grad, mu = 0)),

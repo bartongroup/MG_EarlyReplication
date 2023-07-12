@@ -10,3 +10,7 @@ dna_seq/bed
 dna_seq/bedgraph
 dna_seq/multiqc
 tab
+revision/doc/*
+!revision/doc/*qmd
+!revision/doc/*Rmd
+!revision/doc/*scss

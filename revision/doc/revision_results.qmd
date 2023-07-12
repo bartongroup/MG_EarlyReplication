@@ -1,0 +1,96 @@
+---
+title: "The location and development of Replicon Cluster Domains in early replicating DNA"
+subtitle: "Revision proposal"
+author:
+  - name: Marek Gierlinski
+    affiliations: Data Analysis Group
+    note: "Creator of this report"
+date: today
+date-format: "D MMMM YYYY"
+execute:
+  echo: false
+  cache: true
+  warning: false
+format:
+  html:
+    theme:
+      - journal
+      - report.scss
+    toc: true
+editor: source
+self-contained: true
+---
+
+```{r libraries, cache=FALSE, include=FALSE}
+suppressPackageStartupMessages({
+  library(targets)
+  library(tidyverse)
+  library(gt)
+  library(cowplot)
+})
+
+tar_config_set(store = "../../_targets")
+```
+
+
+# TADs
+
+```{r}
+#| label: fig-tads
+#| fig-cap: Alignment of manually selected peaks (marked with black lines) and TADs (marked with yellow/blue segments). The histograms show normalised counts at 100-130 time points.
+#| fig-width: 8
+#| fig-height: 20
+tar_read(fig_tads)
+```
+
+# Peak width increase
+
+`r tar_read(n_pg)` isolated peaks have been identified in our manuscript. The width of each peak has been estimated using either wavelet analysis or Gaussian curve fitting. @fig-pg-sel-growth shows a few examples of peak width.
+
+```{r}
+#| label: fig-pg-sel-growth
+#| fig-cap: Random selection of isolated peak width, estimated by either wavelet analysis or Gaussian curve fitting.
+#| fig-width: 8
+#| fig-height: 8
+tar_read(fig_pg_sel_growth) 
+```
+
+Peaks width data were approached in two different ways. Firstly, for a given peak and measurement method, a linear regression was applied to the four time points. Though the linear fit does not represent the peak growth well in some cases (where there is a sudden increase in the width over a single time point), they approximate the growth over the full range of time, as shown in @{fig-pg-growth}A.
+
+Secondly, a gradient between two consecutive time points was found. The gradient represents the peak growth from time point to time point ans is shown in @{fig-pg-growth}B. If there is no growth the gradient is expected to be zero. @tbl-pg-test shows results of t-tests against the null hypothesis of zero for three gradients for each method.
+
+The growth of peaks from 40-70 min onwards is statistically significant, with the speed of up to 2-3 kb/min.
+
+```{r}
+#| label: fig-pg-growth
+#| fig-cap: Illustration of peak width growth for all isolated peaks, measured by wavelet analysis or Gaussian curve fitting. A. The slope of a linear fit to four time points. The peaks are ordered according to their chromosomal positions and the colour indicates chromosomes. B. The gradient between adjacent time points. The gradient is calculated as the difference between the peak widths divided by the time separation between the adjacent time points (30 min) and it represents the peak growth speed. The black points with error bars represent the mean with its 95% confidence intervals.
+#| fig-width: 8
+#| fig-height: 6
+tar_read(fig_pg_growth) 
+```
+
+```{r}
+#| label: tbl-pg-test
+#| tbl-cap: Results of a one sample t-test against zero for gradients.
+tar_read(pg_lm_grad) |> 
+  pluck("grad_test") |> 
+  select(method = type, midpoint, mean_growth = estimate, CI_lo = conf.low, CI_up = conf.high, p_value = p.adj) |> 
+  group_by(method) |> 
+  gt() |> 
+  fmt_number(c(mean_growth, CI_lo, CI_up), n_sigfig = 2) |> 
+  fmt_number(p_value, rows = p_value >= 0.001,  n_sigfig = 2) |> 
+  fmt_scientific(p_value, rows = p_value < 0.001,  decimals = 1) 
+```
+
+
+
+# Session info
+
+
+```{r}
+#| label: session-info
+#| cache: false
+si <- targets::tar_read(session_info)
+si$loadedOnly <- NULL
+si
+```

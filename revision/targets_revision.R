@@ -9,7 +9,8 @@ targets_revision <- function(){
   
   peak_growth <- list(
     tar_target(pg, read_peak_growth()),
-    tar_target(fig_pg_sel_growth, plot_sel_peak_growth(pg, n_peaks = 16)),
+    tar_target(n_pg, nrow(pg)),
+    tar_target(fig_pg_sel_growth, plot_sel_peak_growth(pg, n_peaks = 16, ylab = "Peak width (kb)")),
     tar_target(pg_lm_grad, time_lm_grad(pg)),
     tar_target(fig_pg_growth, plot_time_lm_grad(pg_lm_grad, "Linear fit slope (kb / min)", "Gradient (kb / min)", ymin = -2, cex = 1, point_size = 0.5))
   )

@@ -25,7 +25,7 @@ select <- dplyr::select
 
 # Add session info
 sesinfo <- list(
-  tar_target(session_info, sessionInfo())
+  tar_force(session_info, sessionInfo(), force = TRUE)
 )
 
 # Targets
