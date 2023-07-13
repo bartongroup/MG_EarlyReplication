@@ -66,12 +66,15 @@ plot_peak_tads <- function(pft, tads, gbg, peakid, margin = 1, time_point = "TM_
     labs(x = str_glue("chr{pk$chr}"), y = NULL) +
     geom_rect(data = tad, aes(xmin = tad_start, xmax = tad_end, ymin = ymin, ymax = ymax, fill = fill)) +
     geom_segment(data = pk, aes(x = peak_start, xend = peak_end, y = 0, yend = 0), linewidth = 1.2) +
+    geom_text(x = -Inf, y = Inf, label = signif(pk$score, 2), hjust = -0.2, vjust = 1.5) +
     scale_fill_manual(values = okabe_ito_palette[c(2,4)]) +
     guides(fill = "none") +
     coord_cartesian(xlim = c(r1, r2))
 }
 
-plot_tads_sel <- function(pft, tads, gbg, n_sel = NULL, margin = 1, time_point = "TM_100-130", seed = 42, ncol = 6) {
+plot_tads_sel <- function(pft, tads, boots, gbg, n_sel = NULL, margin = 1, time_point = "TM_100-130", seed = 42, ncol = 6) {
+  pft <- pft |> 
+    left_join(boots |> select(peak_id, score) |> distinct(), by = "peak_id")
   if(is.null(n_sel)) {
     ids <- pft$peak_id
   } else {
@@ -186,8 +189,8 @@ bootstrap_overlaps <- function(pft, tads, seed = 42, nb = 100, ...) {
     group_by(peak_id) |> 
     summarise(
       score = score[1],
-      p = 1 - length(which(score > value)) / n(),
-      p_adj = p.adjust(p, method = "BH")
+      p = 1 - length(which(score > value)) / n()
     ) |> 
+    mutate(p_adj = p.adjust(p, method = "BH")) |> 
     right_join(ov, by = "peak_id")
 }

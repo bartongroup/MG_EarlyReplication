@@ -32,16 +32,45 @@ suppressPackageStartupMessages({
 tar_config_set(store = "../../_targets")
 ```
 
-
 # TADs
+
+TADs were taken from [Kang et al. 2020](http://genesdev.cshlp.org/content/34/13-14/913.full). HiC data for U2OS cells were downloaded as `.hic` files, which are binary files with HiC contact maps. Out of two replicates, a stronger, less noisy replicate 1 was selected. Time point of 360 min was selected. The files were accessed from [NCBI Gene Expression Omnibus](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM4194463).
+
+For processing and TAD detection [HiCExplorer](https://hicexplorer.readthedocs.io/en/latest/index.html) was used. First, `.hic` file was converted into `cool` format:
+
+```         
+hicConvertFormat -m {input} -o {output} --inputFormat=hic --outputFormat=cool
+```
+
+This command made a `.mcool` file with multiple resolutions. 50,000 bp was picked as it matches resolution in our data. The tool developer recommendations were followed, and the balance matrix was created:
+
+```         
+hicCorrectMatrix correct -m {input}::/resolutions/50000 -o {output} --filterThreshold -1.5 5
+```
+
+The thresholds were selected by inspecting the diagnostic plot as in the tutorial. Finally, TADs were detected at the FDR threshold of 0.01:
+
+```         
+hicFindTADs -m {input} --minDepth 150000 --maxDepth 500000 --step 50000 --thresholdComparisons 0.01  --outPrefix {file.prefix} --correctForMultipleTesting fdr
+```
+
+`r tar_read(n_pft)` auto-isolated peaks were compared to the TADs. @fig-tads illustrates the association with all isolated peaks and the TADs.
 
 ```{r}
 #| label: fig-tads
-#| fig-cap: Alignment of manually selected peaks (marked with black lines) and TADs (marked with yellow/blue segments). The histograms show normalised counts at 100-130 time points.
+#| fig-cap: Alignment of manually selected peaks (marked with black lines) and TADs (marked with yellow/blue segments). The histograms show normalised counts at 100-130 time points. The numbers in plots shows the association score (see text).
 #| fig-width: 8
 #| fig-height: 20
-tar_read(fig_tads)
+tar_read(fig_tads) 
 ```
+
+Statistical analysis of the association between peak-TAD was performed using bootstrap estimation. The coverage of the TAD by the peak and the coverage of the peak by the TAD were calculated for each overlapping peak-TAD pair. These coverage values, which fall between 0 and 1, were multiplied to produce the overlap score. The highest overlap score from all overlapping TADs was then identified for each peak, creating the association score. It should be noted that our scoring system is designed to favor situations where peak-TAD alignment is tight, and the sizes of the regions are comparable.
+
+Once this method of calculating the strength of association for each peak had been established, a bootstrap analysis was performed. The distribution of TAD lengths was extracted from the data, with any TADs exceeding 2 MB in length being excluded. These longer TADs, which often span centromeric gaps, have low coverage by considerably shorter peaks despite possible overlap. Coverage of all chromosomes with TADs, randomly drawn from the length distribution, was generated during each bootstrap iteration. Association scores were then calculated against these randomly distributed TADs for each peak.
+
+This bootstrap process was repeated 1000 times, with a cut-off quantile being determined for each peak's score against the random distribution of scores, which served as the p-value. The Benjamini-Hochberg method was utilized to correct these p-values for multiple tests.
+
+Despite some peaks reaching high association scores with overlapping TADs, none of these scores was found to be statistically significant at a 0.05 false discovery rate (FDR) level.
 
 # Peak width increase
 
@@ -55,11 +84,11 @@ tar_read(fig_tads)
 tar_read(fig_pg_sel_growth) 
 ```
 
-Peaks width data were approached in two different ways. Firstly, for a given peak and measurement method, a linear regression was applied to the four time points. Though the linear fit does not represent the peak growth well in some cases (where there is a sudden increase in the width over a single time point), they approximate the growth over the full range of time, as shown in @{fig-pg-growth}A.
+The analysis of peak width data was conducted in two distinct manners. Initially, a linear regression was applied to the four time points for each peak and measurement method. Although the linear fit might not accurately represent peak growth in certain instances (particularly where there is an abrupt increase in width over a single time point), it does serve as an approximation of growth across the entire time range, as illustrated in @fig-pg-growthA.
 
-Secondly, a gradient between two consecutive time points was found. The gradient represents the peak growth from time point to time point ans is shown in @{fig-pg-growth}B. If there is no growth the gradient is expected to be zero. @tbl-pg-test shows results of t-tests against the null hypothesis of zero for three gradients for each method.
+Subsequently, a gradient was calculated between two consecutive time points. This gradient depicts the incremental growth of the peak from one time point to the next, as shown in @fig-pg-growthB. Should there be no growth, the expected gradient would be zero. The t-test results against the null hypothesis of zero, performed for three gradients for each method, are presented in @tbl-pg-test.
 
-The growth of peaks from 40-70 min onwards is statistically significant, with the speed of up to 2-3 kb/min.
+It is noteworthy that the growth of peaks from the 40-70 minute mark is statistically significant, with a rate reaching up to 2-3 kb/min.
 
 ```{r}
 #| label: fig-pg-growth
@@ -82,7 +111,6 @@ tar_read(pg_lm_grad) |>
   fmt_scientific(p_value, rows = p_value < 0.001,  decimals = 1) 
 ```
 
-
 # Valley filling
 
 A data for `r tar_read(n_vf)` valleys, including the mean and minumum signal, have been collected. @fig-vf-sel-filling shows a few example of valley signal time courses.
@@ -94,7 +122,6 @@ A data for `r tar_read(n_vf)` valleys, including the mean and minumum signal, ha
 #| fig-height: 8
 tar_read(fig_vf_sel_filling) 
 ```
-
 
 Valley filling data were analysed in the same way as the peak width data, and the results are shown in @fig-vf-filling and @tbl-vf-test. There is a statistically significant increase in valley filling across all time points.
 
@@ -123,7 +150,6 @@ tar_read(vf_lm_grad) |>
 
 Adjacent height similarity (AHS) were calculated for `r tar_read(n_aps)` groups of peaks in this manuscript. @fig-aps shows their summary.
 
-
 ```{r}
 #| label: fig-aps
 #| fig-cap: Adjacent peak similarity across time points
@@ -134,7 +160,6 @@ tar_read(fig_aps)
 
 The change in AHS between time points was assessed with repeated measures ANOVA (an extension of paired t-test), taking into account repeated measurements of the same peak at different time points. The result, shown in @tbl-aps-test, indicate no detected difference in AHS between time points.
 
-
 ```{r}
 #| label: tbl-aps-test
 #| tbl-cap: Results of repeated measures ANOVA for adjacent height similarity across four time points. 'Within' section contains the result for AHS versus time point.
@@ -144,9 +169,17 @@ tar_read(aps_test) |>
   sub_missing(c(statistic, p.value), missing_text = "")
 ```
 
+# Conclusions
+
+1.  There is no significant association between isolated peaks and TADs.
+
+2.  Isolated peaks grow in width at later stages (> 70 min) at increasing rates ~0.4 - 3 kb / min.
+
+3.  There is a statistically significant increase in valley filling at later time points.
+
+4.  There is no statistically significant difference in adjacent height similarity between time all time points.
 
 # Session info
-
 
 ```{r}
 #| label: session-info
