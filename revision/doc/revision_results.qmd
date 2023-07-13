@@ -58,7 +58,7 @@ hicFindTADs -m {input} --minDepth 150000 --maxDepth 500000 --step 50000 --thresh
 
 ```{r}
 #| label: fig-tads
-#| fig-cap: Alignment of manually selected peaks (marked with black lines) and TADs (marked with yellow/blue segments). The histograms show normalised counts at 100-130 time points. The numbers in plots shows the association score (see text).
+#| fig-cap: Alignment of manually selected peaks (marked with black lines) and TADs (marked with yellow/blue segments). The histograms show normalised counts at 100-130 time points. The numbers in plots show the association score (see text).
 #| fig-width: 8
 #| fig-height: 20
 tar_read(fig_tads) 
@@ -84,9 +84,9 @@ Despite some peaks reaching high association scores with overlapping TADs, none 
 tar_read(fig_pg_sel_growth) 
 ```
 
-The analysis of peak width data was conducted in two distinct manners. Initially, a linear regression was applied to the four time points for each peak and measurement method. Although the linear fit might not accurately represent peak growth in certain instances (particularly where there is an abrupt increase in width over a single time point), it does serve as an approximation of growth across the entire time range, as illustrated in @fig-pg-growthA.
+The analysis of peak width data was conducted in two distinct manners. Initially, a linear regression was applied to the four time points for each peak and measurement method. Although the linear fit might not accurately represent peak growth in certain instances (particularly where there is an abrupt increase in width over a single time point), it does serve as an approximation of growth across the entire time range, as illustrated in @{fig-pg-growth}A.
 
-Subsequently, a gradient was calculated between two consecutive time points. This gradient depicts the incremental growth of the peak from one time point to the next, as shown in @fig-pg-growthB. Should there be no growth, the expected gradient would be zero. The t-test results against the null hypothesis of zero, performed for three gradients for each method, are presented in @tbl-pg-test.
+Subsequently, a gradient was calculated between two consecutive time points. This gradient depicts the incremental growth of the peak from one time point to the next, as shown in @{fig-pg-growth}B. Should there be no growth, the expected gradient would be zero. The t-test results against the null hypothesis of zero, performed for three gradients for each method, are presented in @tbl-pg-test.
 
 It is noteworthy that the growth of peaks from the 40-70 minute mark is statistically significant, with a rate reaching up to 2-3 kb/min.
 
@@ -158,7 +158,7 @@ Adjacent height similarity (AHS) were calculated for `r tar_read(n_aps)` groups 
 tar_read(fig_aps) 
 ```
 
-The change in AHS between time points was assessed with repeated measures ANOVA (an extension of paired t-test), taking into account repeated measurements of the same peak at different time points. The result, shown in @tbl-aps-test, indicate no detected difference in AHS between time points.
+The change in AHS between time points was assessed with repeated measures ANOVA (an extension of paired t-test), taking into account repeated measurements of the same peak at different time points. The results, shown in @tbl-aps-test, indicate no detected difference in AHS between time points.
 
 ```{r}
 #| label: tbl-aps-test
@@ -178,6 +178,10 @@ tar_read(aps_test) |>
 3.  There is a statistically significant increase in valley filling at later time points.
 
 4.  There is no statistically significant difference in adjacent height similarity between time all time points.
+
+# Code
+
+The R code used to create this document is available at [GitHub](https://github.com/bartongroup/MG_EarlyReplication/tree/main/revision).
 
 # Session info
 
