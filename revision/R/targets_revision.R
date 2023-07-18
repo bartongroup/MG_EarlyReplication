@@ -30,7 +30,8 @@ targets_revision <- function(){
     tar_target(aps, read_adjacent_peak_similarity()),
     tar_target(n_aps, aps$peak_id |> unique() |> length()),
     tar_target(fig_aps, plot_peak_values(aps, ylab = "Adjacent height similarity")),
-    tar_target(aps_test, time_point_repeated_anova(aps))
+    tar_target(aps_test, time_point_repeated_anova(aps)),
+    tar_target(aps_zero, zero_test(aps))
   )
   
   c(

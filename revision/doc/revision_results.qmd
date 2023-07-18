@@ -169,6 +169,22 @@ tar_read(aps_test) |>
   sub_missing(c(statistic, p.value), missing_text = "")
 ```
 
+
+At each time point, the AHS was tested against the null hypothesis of zero, using a one sample t-test. The results are shown in @tbl-aps-zero.
+
+```{r}
+#| label: tbl-aps-zero
+#| tbl-cap: Results of a one sample t-test against zero for four time points of AHS. CI is a 95% confidence interval of the mean.
+tar_read(aps_zero) |> 
+  select(time_point, mean = estimate, CI_lo = conf.low, CI_up = conf.high, p_value = p.value) |>
+  mutate(p_adj = p.adjust(p_value, method = "BH")) |>
+  gt() |> 
+  fmt_number(c(mean, CI_lo, CI_up), n_sigfig = 2) |> 
+  fmt_scientific(c(p_value, p_adj), decimals = 1) 
+```
+
+All AHS values are positive.
+
 # Conclusions
 
 1.  There is no significant association between isolated peaks and TADs.
@@ -177,7 +193,7 @@ tar_read(aps_test) |>
 
 3.  There is a statistically significant increase in valley filling at later time points.
 
-4.  There is no statistically significant difference in adjacent height similarity between time all time points.
+4.  There is no statistically significant difference in adjacent height similarity between time all time points. At each time point the mean AHS is statistically significantly greater than zero.
 
 # Code
 

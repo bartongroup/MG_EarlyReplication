@@ -32,3 +32,13 @@ time_point_repeated_anova <- function(d) {
   aov(value ~ time_point + Error(peak_id), data = d) |> 
     tidy()
 }
+
+zero_test <- function(d) {
+  d |> 
+    select(time_point, value) |> 
+    nest(data = value) |> 
+    mutate(fit = map(data, ~t.test(.x$value, mu = 0))) |> 
+    mutate(tidied = map(fit, tidy)) |> 
+    unnest(tidied) |> 
+    select(-c(data, fit))
+}
