@@ -83,7 +83,7 @@ struct U2OSTimingDomains {
     
     func timingDomainLevelsInRegion(chromosome: String, startKb: Double, endKb: Double) -> [Double] {
         // returns an array of all timing domains in the specified region
-        let startBin = Int(startKb * 1000) * binSizeBp
+        let startBin = Int(startKb * 1000) / binSizeBp
         let endBin = Int(endKb * 1000) / binSizeBp
         guard timingsByChromosome[chromosome] != nil else {
             return [Double]()
